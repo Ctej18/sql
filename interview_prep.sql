@@ -99,3 +99,18 @@ from dup_ids)
 select l.id,'dup' || cast(rn as char(2)) as duprank from list l
 left join rank_cte r
 on l.id = r.id
+
+--running sum
+with products as (
+select 'P1' as product_id, 200 as cost
+union all select 'P2' as product_id, 300 as cost
+union all select 'P3' as product_id, 300 as cost
+union all select 'P4' as product_id, 500 as cost
+union all select 'P5' as product_id, 800 as cost
+)
+/*select *,
+	   sum(cost) over (order by product_id) as running_sum
+from products*/
+select *,
+       sum(cost) over (order by cost asc rows between unbounded preceding and current row) as running_sum
+from products
