@@ -77,3 +77,25 @@ from emp_2020 e20
 full outer join emp_2021 e21
 on e20.emp_id = e21.emp_id
 where coalesce(e20.designation,'xxx') != coalesce(e21.designation,'yyy')
+
+--rank only duplicates
+with list as (
+select 'a' as id
+union all select 'a' as id
+union all select 'b' as id
+union all select 'c' as id
+union all select 'c' as id
+union all select 'c' as id
+union all select 'd' as id
+union all select 'd' as id
+union all select 'e' as id
+),
+dup_ids as (select * from list
+group by id
+having count(*)>1),
+rank_cte as (select *,
+	   rank() over (order by id) as rn
+from dup_ids)
+select l.id,'dup' || cast(rn as char(2)) as duprank from list l
+left join rank_cte r
+on l.id = r.id
