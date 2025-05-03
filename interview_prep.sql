@@ -48,3 +48,32 @@ union all Select 5 as id
 )
 select * from (select id,count(id) as frequency from mode_tbl group by id)
 where frequency = (select max(freq) from (select id,count(id) as freq from mode_tbl group by id))
+
+--list employee_status(outer join with handling nulls)
+create table emp_2020
+(
+emp_id int,
+designation varchar(20)
+);
+
+create table emp_2021
+(
+emp_id int,
+designation varchar(20)
+)
+
+insert into emp_2020 (emp_id,designation) values (1,'Trainee'), (2,'Developer'),(3,'Senior Developer'),(4,'Manager');
+insert into emp_2021 (emp_id,designation) values (1,'Developer'), (2,'Developer'),(3,'Manager'),(5,'Trainee');
+
+select * from emp_2020;
+select * from emp_2021;
+
+select coalesce(e20.emp_id,e21.emp_id) as id,
+		case when e20.designation != e21.designation then 'Promoted'
+		     when e20.emp_id is not null and e21.emp_id is null then 'Resigned'
+			 else 'New Joinee' 
+		end as emp_status
+from emp_2020 e20
+full outer join emp_2021 e21
+on e20.emp_id = e21.emp_id
+where coalesce(e20.designation,'xxx') != coalesce(e21.designation,'yyy')
