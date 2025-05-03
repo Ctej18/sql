@@ -33,3 +33,18 @@ inner join emp_mgr m
 on e.mgr_id = m.emp_id
 where e.salary > m.salary
 order by m.mgr_id
+
+--calculate mode or find out most frequent value in a column
+with mode_tbl as (
+Select 1 as id
+union all Select 2 as id
+union all Select 2 as id
+union all Select 3 as id
+union all Select 3 as id
+union all Select 3 as id
+union all Select 3 as id
+union all Select 4 as id
+union all Select 5 as id
+)
+select * from (select id,count(id) as frequency from mode_tbl group by id)
+where frequency = (select max(freq) from (select id,count(id) as freq from mode_tbl group by id))
