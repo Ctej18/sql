@@ -116,7 +116,6 @@ select *,
 from products
 
 --Custom Sort Order
---custom sorting
 create table happiness_index 
 ("rank" int,
 country varchar(55),
@@ -288,3 +287,16 @@ order by count(*) desc
 limit 1
 
 select cast(now() as date) - INTERVAL '1 days'
+
+--find most searched room type when comma seperated value is present
+with airbnb_searches as (
+Select 1 as user_id,'2022-01-01' as date_searched,'entire home,private room' as room_type
+union all select 2 as user_id,'2022-01-02' as date_searched,'entire home,shared room' as room_type
+union all select 3 as user_id,'2022-01-02' as date_searched,'private room,shared room' as room_type
+union all select 4 as user_id,'2022-01-03' as date_searched,'private room' as room_type)
+select 
+		unnest(string_to_array(room_type,',')) as room_type,
+		count(1) as no_of_searches
+from airbnb_searches
+group by unnest(string_to_array(room_type,','))
+order by no_of_searches desc
