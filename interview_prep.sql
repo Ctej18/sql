@@ -300,3 +300,11 @@ select
 from airbnb_searches
 group by unnest(string_to_array(room_type,','))
 order by no_of_searches desc
+
+--find out top 3 products in each category,both aggregation and window function can be used at once to reduce query length
+Select * from (select category,product_id,sum(sales) as total_sales,
+	   rank() over (partition by category order by category,sum(sales) desc) as rank
+from orders_data
+group by category,product_id
+order by sum(sales) desc)
+where rank <=3
