@@ -145,3 +145,146 @@ select * from (select  *,
 		end as custom_sort_order
 from happiness_index)
 order by custom_sort_order desc,happiness_2021 desc
+
+--Find nth highest salary of employess
+Create table nth_Employees
+(
+ id int primary key,
+ FirstName varchar(50),
+ LastName varchar(50),
+ Gender varchar(50),
+ Salary int
+)
+
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (101,'Ben', 'Hoskins', 'Male', 70000)
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (102,'Mark', 'Hastings', 'Male', 60000)
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (103,'Steve', 'Pound', 'Male', 45000),
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (104,'Ben', 'Hoskins', 'Male', 70000),
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (105,'Philip', 'Hastings', 'Male', 45000),
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (106,'Mary', 'Lambeth', 'Female', 30000)
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (107,'Valarie', 'Vikings', 'Female', 35000)
+Insert into nth_Employees (id,FirstName,LastName,Gender,Salary) values (108,'John', 'Stanmore', 'Male', 80000)
+
+with rank_cte as
+(select *,
+       dense_rank() over (order by id) as dr
+from nth_Employees) 
+select * from rank_cte
+where dr=3
+
+--find out employess hired in last n moths
+Create table lastn_Employees
+(
+     
+     FirstName varchar(50),
+     LastName varchar(50),
+     Gender varchar(50),
+     Salary int,
+     HireDate timestamp
+)
+
+
+INSERT INTO lastn_Employees (ID,FirstName, LastName, Gender, Salary, HireDate) VALUES
+(1, 'Steve', 'Pound', 'Male', 45000, '2014-04-20'),
+(2, 'Ben', 'Hoskins', 'Male', 70000, '2014-04-05'),
+(3, 'Philip', 'Hastings', 'Male', 45000, '2014-03-11'),
+(4, 'Mary', 'Lambeth', 'Female', 30000, '2014-03-10'),
+(5, 'Valarie', 'Vikings', 'Female', 35000, '2014-02-09'),
+(6, 'John', 'Stanmore', 'Male', 80000, '2014-02-22'),
+(7, 'Able', 'Edward', 'Male', 5000, '2014-01-22'),
+(8, 'Emma', 'Nan', 'Female', 5000, '2014-01-14'),
+(9, 'Jd', 'Nosin', 'Male', 6000, '2013-01-10'),
+(10, 'Todd', 'Heir', 'Male', 7000, '2013-02-14'),
+(11, 'San', 'Hughes', 'Male', 7000, '2013-03-15'),
+(12, 'Nico', 'Night', 'Male', 6500, '2013-04-19'),
+(13, 'Martin', 'Jany', 'Male', 5500, '2013-05-23'),
+(14, 'Mathew', 'Mann', 'Male', 4500, '2013-06-23'),
+(15, 'Baker', 'Barn', 'Male', 3500, '2013-07-23'),
+(16, 'Mosin', 'Barn', 'Male', 8500, '2013-08-21'),
+(17, 'Rachel', 'Aril', 'Female', 6500, '2013-09-14'),
+(18, 'Pameela', 'Son', 'Female', 4500, '2013-10-14'),
+(19, 'Thomas', 'Cook', 'Male', 3500, '2013-11-14'),
+(20, 'Malik', 'Md', 'Male', 6500, '2013-12-14'),
+(21, 'Josh', 'Anderson', 'Male', 4900, '2014-05-01'),
+(22, 'Geek', 'Ging', 'Male', 2600, '2014-04-01'),
+(23, 'Sony', 'Sony', 'Male', 2900, '2014-04-30'),
+(24, 'Aziz', 'Sk', 'Male', 3800, '2014-03-01'),
+(25, 'Amit', 'Naru', 'Male', 3100, '2014-03-31');
+
+SELECT *,
+    EXTRACT(DAY FROM (now() - HireDate)) AS days
+FROM lastn_Employees
+where EXTRACT(DAY FROM (now() - HireDate)) < 30
+
+--Transpose rows into columns(pivoting)
+Create Table Countries
+(
+ Country varchar(50),
+ City varchar(50)
+)
+
+INSERT INTO Countries (Country, City) VALUES 
+('USA', 'New York'),
+('USA', 'Houston'),
+('USA', 'Dallas'),
+('India', 'Hyderabad'),
+('India', 'Bangalore'),
+('India', 'New Delhi'),
+('UK', 'London'),
+('UK', 'Birmingham'),
+('UK', 'Manchester');
+
+select * from countries
+
+with city_rank as (
+Select *,
+	   row_number() over (partition by country order by city) as rn
+from countries
+)
+select country,
+	   Max(city) filter (where rn=1) as city1,
+	   Max(city) filter (where rn=2) as city2,
+	   Max(city) filter (where rn=3) as city3
+from city_rank
+group by country
+
+--find department name with maximum number of employees
+Create Table Departments
+(
+     DepartmentID int primary key,
+     DepartmentName varchar(50)
+)
+
+Create Table dep_Employees
+(
+     EmployeeID int primary key,
+     EmployeeName varchar(50),
+     DepartmentID int
+)
+
+Insert into Departments (DepartmentID,DepartmentName) values (1, 'IT')
+Insert into Departments (DepartmentID,DepartmentName) values (2, 'HR')
+Insert into Departments (DepartmentID,DepartmentName) values (3, 'Payroll')
+
+Insert into dep_Employees (EmployeeID,EmployeeName,DepartmentID) values (1, 'Mark', 1)
+Insert into dep_Employees (EmployeeID,EmployeeName,DepartmentID)  values (2, 'John', 1)
+Insert into dep_Employees (EmployeeID,EmployeeName,DepartmentID)  values (3, 'Mike', 1)
+Insert into dep_Employees (EmployeeID,EmployeeName,DepartmentID) values (4, 'Mary', 2)
+Insert into dep_Employees (EmployeeID,EmployeeName,DepartmentID) values (5, 'Stacy', 3)
+
+with temp as
+(Select departmentname,count(EmployeeID) as emp_count from dep_Employees e
+inner join Departments dep
+on dep.departmentid = e.departmentid
+group by dep.departmentid) 
+select departmentname from temp
+where emp_count = (select max(emp_count) from temp)
+('or')
+Select departmentname from dep_Employees e
+inner join Departments dep
+on dep.departmentid = e.departmentid
+group by dep.departmentid
+order by count(*) desc
+limit 1
+
+select cast(now() as date) - INTERVAL '1 days'
