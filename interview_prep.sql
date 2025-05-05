@@ -308,3 +308,15 @@ from orders_data
 group by category,product_id
 order by sum(sales) desc)
 where rank <=3
+
+--rolling n Sum
+with dataset as (Select 
+		date_part('year',order_date) as year,
+		date_part('month',order_date) as month,
+		Sum(sales) as sales
+from orders_data
+group by date_part('year',order_date),date_part('month',order_date)
+order by date_part('year',order_date),date_part('month',order_date))
+select *,
+	   Sum(sales) over (order by year,month rows between 2 preceding and 0 preceding) as rolling_sum
+from dataset
