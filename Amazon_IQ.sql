@@ -47,3 +47,32 @@ from amazon_employees e
 Select emp_id,emp_name,rating,manager_id from rating
 where highest_rating = 1 or lowest_rating = 1
 
+/* 
+You are given a table, product_spend, that tracks Amazon customers' spending on different products 
+across various categories. Your task is to write an SQL query that identifies the top two 
+highest-grossing products within each category for the year 2022. 
+The output should include the category, product, and total_spend.
+*/
+CREATE TABLE product_spend (
+    category           VARCHAR,
+    product            VARCHAR,
+    user_id            INTEGER,
+    spend              DECIMAL,
+    transaction_date   TIMESTAMP
+);
+
+INSERT INTO product_spend (category, product, user_id, spend, transaction_date) VALUES
+('appliance', 'refrigerator', 165, 246.00, '2021-12-26 12:00:00'),
+('appliance', 'refrigerator', 123, 299.99, '2022-03-02 12:00:00'),
+('appliance', 'washing machine', 123, 219.80, '2022-03-02 12:00:00'),
+('electronics', 'vacuum', 178, 152.00, '2022-04-05 12:00:00'),
+('electronics', 'wireless headset', 156, 249.90, '2022-07-08 12:00:00'),
+('electronics', 'vacuum', 145, 189.00, '2022-07-15 12:00:00');
+
+with category_table as (select category,product,sum(spend) as total_spend,
+       dense_rank() over (partition by category order by sum(spend) desc) as rn
+from product_spend
+where DATE_PART('year',transaction_date) = 2022
+group by category,product)
+select category,product,total_spend from category_table
+where rn<=2
