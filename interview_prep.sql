@@ -319,4 +319,10 @@ group by date_part('year',order_date),date_part('month',order_date)
 order by date_part('year',order_date),date_part('month',order_date))
 select *,
 	   Sum(sales) over (order by year,month rows between 2 preceding and 0 preceding) as rolling_sum
-from dataset
+from dataset 
+
+--Find out highest units_sold per country(first_value will give first record as per window)
+Select *,
+	   first_value(units_sold) over (partition by country order by units_sold desc) as highest_units
+from public.sales
+order by country
