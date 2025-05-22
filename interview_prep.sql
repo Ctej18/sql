@@ -326,3 +326,35 @@ Select *,
 	   first_value(units_sold) over (partition by country order by units_sold desc) as highest_units
 from public.sales
 order by country
+
+--Find out employees who have only SQL as skill(101,106)
+with temp_table as (
+SELECT 101 AS emp_id, 'SQL' AS skills
+UNION ALL
+SELECT 102 AS emp_id, 'SQL' AS skills
+UNION ALL
+SELECT 102 AS emp_id, 'Python' AS skills
+UNION ALL
+SELECT 103 AS emp_id, 'Java' AS skills
+UNION ALL
+SELECT 103 AS emp_id, 'SQL' AS skills
+UNION ALL
+SELECT 104 AS emp_id, 'Python' AS skills
+UNION ALL
+SELECT 105 AS emp_id, 'SQL' AS skills
+UNION ALL
+SELECT 105 AS emp_id, 'Excel' AS skills
+UNION ALL
+SELECT 106 AS emp_id, 'SQL' AS skills
+UNION ALL
+SELECT 107 AS emp_id, 'Java' AS skills
+UNION ALL
+SELECT 107 AS emp_id, 'C++' AS skills
+)
+--select * from temp_table
+Select t.emp_id,count(t.skills) from temp_table t
+inner join temp_table p
+on t.emp_id = p.emp_id
+where t.skills = 'SQL'
+group by t.emp_id
+having count(t.skills) = 1
