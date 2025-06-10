@@ -358,3 +358,18 @@ on t.emp_id = p.emp_id
 where t.skills = 'SQL'
 group by t.emp_id
 having count(t.skills) = 1
+
+--what will be the output for given query below(!=join)
+with tablea as (select 1 as id
+union all 
+select 2 as id),
+tableb as (select 1 as order_id
+union all 
+select 2 as order_id
+union all 
+select 3 as order_id)
+select id,order_id from tablea
+inner join tableb
+on id != order_id
+
+select cast(now() as date) - INTERVAL '10 year'
