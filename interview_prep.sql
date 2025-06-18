@@ -373,3 +373,74 @@ inner join tableb
 on id != order_id
 
 select cast(now() as date) - INTERVAL '10 year'
+
+/* 
+You have a list of products and a purchase log with customer ratings (1–5 stars).
+👉 For each product category, find the lowest price among products that received at least one 4-star or 5-star rating.
+If no such rating exists in a category, return 0 as the lowest price.
+✅ Output: One row per category, sorted alphabetically by category name.
+*/
+with Products as (
+	Select 8 as product_id, 'Books' as  category, 275 as price
+	union all
+	Select 9 as product_id, 'Books' as  category, 215 as price
+	union all
+	Select 10 as product_id, 'Electronics' as  category, 1100 as price
+	union all
+	Select 11 as product_id, 'Electronics' as  category, 1300 as price
+	union all
+	Select 12 as product_id, 'Toys' as  category, 200 as price
+	union all
+	Select 13 as product_id, 'Toys' as  category, 90 as price
+	union all
+	Select 14 as product_id, 'Clothing' as  category, 350 as price
+	union all
+	Select 15 as product_id, 'Clothing' as  category, 400 as price
+	union all
+	Select 16 as product_id, 'Home' as  category, 600 as price
+	union all
+	Select 17 as product_id, 'Home' as  category, 450 as price
+	union all
+	Select 18 as product_id, 'Home' as  category, 700 as price
+	union all
+	Select 19 as product_id, 'Fitness' as  category, 999 as price
+	union all
+	Select 20 as product_id, 'Fitness' as  category, 799 as price
+	),
+Purchases as (
+	Select 108 as purchase_id, 8 as product_id, 208 as customer_id, 4 as rating
+	union all
+	Select 109, 9, 209, 2
+	union all
+	Select 110, 10, 210, 5
+	union all
+	Select 111, 11, 211, 3
+	union all
+	Select 112, 12, 212, 5
+	union all
+	Select 113, 13, 213, 4
+	union all
+	Select 114, 14, 214, 1
+	union all
+	Select 115, 15, 215, 3
+	union all
+	Select 116, 16, 216, 4
+	union all
+	Select 117, 17, 217, 2
+	union all
+	Select 118, 18, 218, 5
+	union all
+	Select 119, 19, 219, 5
+	union all
+	Select 120, 20, 220, 5
+),
+pricing as (Select *
+ from Products P
+join Purchases PU
+on P.Product_id = PU.product_id)
+select category,coalesce(min(case when rating>=4 then price end),0) as modified_pricing from pricing
+group by category
+order by category
+
+
+
