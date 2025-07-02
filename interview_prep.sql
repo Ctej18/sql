@@ -469,7 +469,12 @@ select student_id from skc
 where skill_count = 2
 and sp_skill = 2
 
-
+--solution 2
+select student_id, count(skill) as skill_count,
+        count(case when skill in ('SQL','Python') then 1 else null end) as sp_skill
+ from student
+group by student_id
+having count(skill) = 2 and count(case when skill in ('SQL','Python') then 1 else null end) = 2
 
 
 
