@@ -442,5 +442,35 @@ select category,coalesce(min(case when rating>=4 then price end),0) as modified_
 group by category
 order by category
 
+--Find student who has only both sql and python 
+with student as (SELECT 1 as student_id, 'SQL' as skill
+union all
+SELECT 1 as student_id, 'Python' as 
+union all
+SELECT 1 as student_id, 'Tableau' as skill
+union all
+SELECT 2 as student_id, 'SQL' as skill
+union all
+SELECT 3 as student_id, 'SQL' as skill
+union all
+SELECT 3 as student_id, 'Python' as skill
+union all
+SELECT 4 as student_id, 'Tableau' as skill
+union all
+SELECT 5 as student_id, 'Python' as skill
+union all
+SELECT 5 as student_id, 'Tableau' as skill
+),
+skc as (select student_id, count(skill) as skill_count,
+        count(case when skill in ('SQL','Python') then 1 else null end) as sp_skill
+ from student
+group by student_id)
+select student_id from skc
+where skill_count = 2
+and sp_skill = 2
+
+
+
+
 
 
