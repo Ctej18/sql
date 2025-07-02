@@ -491,3 +491,12 @@ where student_id not in (select student_id from student where skill not in ('SQL
 group by student_id
 having count(skill) = 2 
 
+--Solution 5 Using except keyword
+select student_id
+from student
+group by student_id
+having count(skill) = 2 
+eXcept
+select student_id
+from student
+where skill not in ('SQL','Python')
