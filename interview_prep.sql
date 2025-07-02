@@ -484,3 +484,10 @@ select student_id, count(skill) as skill_count,
 group by student_id
 having count(skill) = 2 and count(case when skill not in ('SQL','Python') then 1 else null end) = 0
 
+--Solution 4 where not in subquery
+select student_id, count(skill) as skill_count
+from student
+where student_id not in (select student_id from student where skill not in ('SQL','Python'))
+group by student_id
+having count(skill) = 2 
+
